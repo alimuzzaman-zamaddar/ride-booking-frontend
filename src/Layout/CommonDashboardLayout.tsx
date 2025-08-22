@@ -1,86 +1,78 @@
 import { Outlet } from "react-router-dom";
-import { GiClassicalKnowledge } from "react-icons/gi";
-import DashboardFooter from "../Pages/Dashboard/Shared/DashboardFooter";
 import DashboardNavbar from "../Pages/Dashboard/Shared/DashboardNavbar";
 import Sidebar from "../Pages/Dashboard/Shared/Sidebar";
-import { EarningsSvg, HomeSvg, SettingsSvg } from "../components/SvgContainer/SVgContainer";
-import { FaCalculator } from "react-icons/fa";
+import { HomeSvg } from "../components/SvgContainer/SVgContainer";
 import { FiSearch } from "react-icons/fi";
-import { MdOutlineSettings } from "react-icons/md";
 import { ScrollRestoration } from "react-router-dom";
 import { GrSchedule } from "react-icons/gr";
 import { useState } from "react";
-import { useGetUserDataQuery } from "../redux/Slices/authSlice";
 
-const tutorNavLinks = [
+
+const RiderNavLinks = [
   { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },
-  { id: 3, icon: GrSchedule, path: "/dashboard/schedule", title: "Schedule" },
   {
-    id: 4,
-    icon: EarningsSvg,
-    path: "/dashboard/earnings",
-    title: "Earnings",
+    id: 3,
+    icon: GrSchedule,
+    path: "rideRequest",
+    title: "Request a ride",
   },
-  {
-    id: 4,
-    icon: EarningsSvg,
-    path: "/dashboard/availability",
-    title: "Availability",
-  },
-  {
-    id: 7,
-    icon: SettingsSvg,
-    path: "tutor-settings",
-    title: "Settings",
-  },
+  { id: 3, icon: GrSchedule, path: "myRides", title: "My Rides" },
 ];
 
-const studentNavLinks = [
+const DriverNavLinks = [
   { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },
   {
     id: 2,
     icon: FiSearch,
-    path: "/dashboard/find-tutors",
-    title: "Find Tutors",
+    path: "#",
+    title: "complete rides",
   },
+
+];
+const AdminNavLinks = [
+  { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },
   {
-    id: 3,
-    icon: FaCalculator,
-    path: "my-lessons",
-    title: "My Lessons",
+    id: 2,
+    icon: FiSearch,
+    path: "#",
+    title: "All Users",
   },
-  {
-    id: 4,
-    icon: GiClassicalKnowledge,
-    path: "/dashboard/messages",
-    title: "Messages",
-  },
-  {
-    id: 7,
-    icon: MdOutlineSettings,
-    path: "/dashboard/settings",
-    title: "Settings",
-  },
+
 ];
 
 const CommonDashboardLayout = () => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const { data: user } = useGetUserDataQuery(undefined)
+
+const userString = localStorage.getItem("userData");
+const user = userString ? JSON.parse(userString) : null;
+
+console.log(user);
+
+const role = user?.role; // use optional chaining to avoid errors
+console.log(role);
+
   
-  const role = user?.data?.role;
+  // const role = "admin";
   return (
     <div className="flex h-screen bg-[#FAFAFA] ">
       {/* Sidebar */}
-      {role === "student" && (
+      {role === "rider" && (
         <Sidebar
-          navLinks={studentNavLinks}
+          navLinks={RiderNavLinks}
           showSidebar={showSidebar}
           setShowSidebar={setShowSidebar}
         />
       )}
-      {role === "tutor" && (
+      {role === "driver" && (
         <Sidebar
-          navLinks={tutorNavLinks}
+          navLinks={DriverNavLinks}
+          showSidebar={showSidebar}
+          setShowSidebar={setShowSidebar}
+        />
+      )}
+      {role === "admin" && (
+        <Sidebar
+          navLinks={AdminNavLinks}
           showSidebar={showSidebar}
           setShowSidebar={setShowSidebar}
         />
@@ -96,10 +88,6 @@ const CommonDashboardLayout = () => {
         <div className="flex-1  overflow-y-auto mt-[60px] pb-[50px] xl:pb-[250px] h-auto px-4 py-10 ">
           <Outlet />
           <ScrollRestoration />
-        </div>
-        {/* Fixed Footer aligned to content area only */}
-        <div className="flex-0  container mb-2 xl:mb-6   ">
-          <DashboardFooter />
         </div>
       </div>
     </div>

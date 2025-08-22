@@ -6,13 +6,13 @@ import logoimg from "../../../assets/images/LogoDashboard.png";
 import Image from "../../../components/Tags/Image/Image";
 import { DotSvg } from "../../../components/SvgContainer/SVgContainer";
 import { useState } from "react";
-import { useGetUserDataQuery } from "../../../redux/Slices/authSlice";
+
 
 const Sidebar = ({ navLinks, showSidebar, setShowSidebar }: any) => {
   const [isActive, setisActive] = useState<string | null>(
     navLinks[0].id
   );
-  const { data: user} = useGetUserDataQuery(undefined);
+
   return (
     <aside
       className={clsx(
@@ -28,7 +28,7 @@ const Sidebar = ({ navLinks, showSidebar, setShowSidebar }: any) => {
 
       <div className="p-6 pt-0 xl:pt-6 flex flex-col justify-between h-full">
         <div>
-          <Link to="/dashboard">
+          <Link to="/">
             <Image Alt="Logo" Src={logoimg} className="mb-10" />
           </Link>
 
@@ -66,26 +66,7 @@ const Sidebar = ({ navLinks, showSidebar, setShowSidebar }: any) => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3 pl-10 mt-8">
-          <div className="w-10 h-10 bg-primary-blue text-white rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-all">
-            {user?.data?.avatar ? (
-              <img
-                src={user?.data?.avatar}
-                alt="Avatar"
-                className="w-full h-full object-cover rounded-full"
-              />
-            ) : (
-              <span className="text-sm font-semibold uppercase">
-                {user?.data?.name?.slice(0, 2) ||
-                  user?.data?.email?.slice(0, 2)}
-              </span>
-            )}
-          </div>
-          <div>
-            <div className="text-sm font-semibold">{user?.data?.name}</div>
-            <div className="text-xs text-gray-500">{user?.data?.role}</div>
-          </div>
-        </div>
+
       </div>
     </aside>
   );
