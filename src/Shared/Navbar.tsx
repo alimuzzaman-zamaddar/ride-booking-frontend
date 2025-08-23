@@ -1,36 +1,71 @@
-import { NavLink, Link } from "react-router-dom";
-import logo from "../assets/images/logo.png";
-import { useState } from "react";
-import { IoMdMenu, IoMdClose } from "react-icons/io";
-import Button from "../components/Tags/Button/Button";
-import Image from "../components/Tags/Image/Image";
+// src/components/Navbar.tsx
+import { NavLink, Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Logo from "../components/Logo/Logo";
 
-const redirectLinkArr = [
-  { label: "Home", redirectLink: "/" },
-  { label: "Find tutors", redirectLink: "/find-a-tutor" },
-  { label: "Become a Tutor", redirectLink: "/become-tutor" },
+
+type LinkItem = { label: string; to: string };
+
+const links: LinkItem[] = [
+  { label: "Home", to: "/" },
+  { label: "Features", to: "/features" },
+  { label: "About", to: "/about" },
+  { label: "FAQ", to: "/faq" },
+  { label: "Contact", to: "/contact" },
 ];
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+
+  // close mobile drawer on route change
+  useEffect(() => {
+    setOpen(false);
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [location.pathname]);
+
+  // add subtle glass when scroll
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 6);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // read auth (same pattern you’ve used elsewhere)
+  const userStr = localStorage.getItem("userData");
+  const user = userStr ? JSON.parse(userStr) : null;
+  const role: "rider" | "driver" | "admin" | undefined = user?.role;
 
   return (
-    <nav className="w-full sticky top-0 z-50 bg-white h-auto py-5 border-b border-gray-200">
-      <div className="container flex justify-between items-center relative">
-        {/* Logo */}
-        <Image
-          Src={logo}
-          Alt="Logo"
-          className="w-[180px] cursor-pointer h-[50px] object-contain"
-        />
+    <header
+      className={`sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 ${
+        scrolled ? "bg-white/70 shadow-sm" : "bg-white/60"
+      }`}
+    >
+      {/* gradient top accent */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-fuchsia-500" />
 
-        {/* Desktop Menu */}
-        <ul className="hidden xl:flex flex-row gap-x-8 items-center">
-          {redirectLinkArr.map((item, idx) => (
-            <li key={idx}>
+      <nav className="container mx-auto flex items-center justify-between px-4 py-3">
+        {/* left: logo */}
+        <Link to="/" aria-label="RideGo Home" className="flex items-center">
+          <Logo />
+        </Link>
+
+        {/* center: desktop links */}
+        <ul className="hidden items-center gap-6 xl:flex">
+          {links.map(item => (
+            <li key={item.to}>
               <NavLink
-                className="nav-link-label text-gray-700 hover:text-[#C83C7C] transition"
-                to={item.redirectLink}
+                to={item.to}
+                className={({ isActive }) =>
+                  `text-sm font-semibold transition ${
+                    isActive
+                      ? "text-slate-900"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`
+                }
               >
                 {item.label}
               </NavLink>
@@ -38,62 +73,158 @@ const Navbar = () => {
           ))}
         </ul>
 
-        {/* Desktop Button */}
-        <div className="hidden xl:flex items-center gap-x-4">
-          <Link to="/login">
-            <Button className="primary-btn" Txt={"Login"} />
-          </Link>
+        {/* right: actions */}
+        <div className="hidden items-center gap-3 xl:flex">
+          {user ? (
+            <>
+              <span className="hidden text-xs text-slate-500 sm:inline">
+                Signed in as <b className="text-slate-700">{user.email}</b>
+              </span>
+              <Link
+                to="/dashboard"
+                className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              >
+                {role === "driver"
+                  ? "Driver Dashboard"
+                  : role === "admin"
+                  ? "Admin Dashboard"
+                  : "Dashboard"}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+              >
+                Login
+              </Link>
+              <Link
+                to="/sign-up"
+                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <div className="xl:hidden">
-          <button onClick={() => setIsOpen(!isOpen)} aria-label="Toggle Menu">
-            {isOpen ? (
-              <IoMdClose className="text-3xl text-[#C83C7C]" />
-            ) : (
-              <IoMdMenu className="text-3xl text-[#C83C7C]" />
-            )}
+        {/* hamburger */}
+        <button
+          onClick={() => setOpen(p => !p)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 xl:hidden"
+          aria-label="Toggle menu"
+          aria-expanded={open}
+        >
+          <span className="sr-only">Open menu</span>
+          <div className="grid place-items-center">
+            <Burger open={open} />
+          </div>
+        </button>
+      </nav>
+
+      {/* mobile drawer */}
+      <div
+        className={`xl:hidden fixed inset-y-0 left-0 z-[60] w-[78%] max-w-xs transform bg-white shadow-xl transition-transform duration-300 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between px-4 py-3">
+          <Logo className="h-7" />
+          <button
+            onClick={() => setOpen(false)}
+            className="rounded-xl border border-slate-200 bg-white p-2 text-slate-700 shadow-sm transition hover:bg-slate-50"
+            aria-label="Close menu"
+          >
+            ✕
           </button>
         </div>
-      </div>
 
-      {/* Mobile Sidebar Menu */}
-      <div
-        className={`fixed top-0 left-0 h-full w-[70%] max-w-xs bg-white z-50 shadow-lg transition-transform duration-700 ease-in-out transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } xl:hidden`}
-      >
-        <div className="p-6">
-          <ul className="flex flex-col gap-y-4">
-            {redirectLinkArr.map((item, idx) => (
-              <li key={idx}>
+        <div className="px-4">
+          <ul className="flex flex-col gap-1 py-2">
+            {links.map(item => (
+              <li key={item.to}>
                 <NavLink
-                  to={item.redirectLink}
-                  onClick={() => setIsOpen(false)}
-                  className="nav-link-label block text-gray-700 hover:text-[#C83C7C] transition"
+                  to={item.to}
+                  className={({ isActive }) =>
+                    `block rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                      isActive
+                        ? "bg-slate-100 text-slate-900"
+                        : "text-slate-700 hover:bg-slate-50"
+                    }`
+                  }
                 >
                   {item.label}
                 </NavLink>
               </li>
             ))}
-            <li>
-              <Link to="/login" onClick={() => setIsOpen(false)}>
-                <Button className="primary-btn w-full" Txt={"Login"} />
-              </Link>
-            </li>
           </ul>
+
+          <div className="mt-3 border-t border-slate-200 pt-3">
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="mb-2 block rounded-xl bg-blue-600 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              >
+                {role === "driver"
+                  ? "Driver Dashboard"
+                  : role === "admin"
+                  ? "Admin Dashboard"
+                  : "Dashboard"}
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="mb-2 block rounded-xl border border-slate-200 bg-white px-4 py-2 text-center text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/sign-up"
+                  className="block rounded-xl bg-slate-900 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+
+          <div className="mt-6 px-1 pb-6 text-[11px] text-slate-500">
+            © {new Date().getFullYear()} RideGo — Move smarter.
+          </div>
         </div>
       </div>
 
-      {/* Overlay */}
-      {isOpen && (
+      {/* scrim */}
+      {open && (
         <div
-          onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black bg-opacity-10 z-40 xl:hidden"
-        ></div>
+          className="fixed inset-0 z-50 bg-black/20 backdrop-blur-[1px] xl:hidden"
+          onClick={() => setOpen(false)}
+        />
       )}
-    </nav>
+    </header>
   );
-};
+}
 
-export default Navbar;
+function Burger({ open }: { open: boolean }) {
+  return (
+    <div className="relative h-4 w-5">
+      <span
+        className={`absolute left-0 top-0 block h-0.5 w-5 rounded bg-slate-800 transition-transform ${
+          open ? "translate-y-1.5 rotate-45" : ""
+        }`}
+      />
+      <span
+        className={`absolute left-0 top-1.5 block h-0.5 w-5 rounded bg-slate-800 transition-opacity ${
+          open ? "opacity-0" : "opacity-100"
+        }`}
+      />
+      <span
+        className={`absolute left-0 top-3 block h-0.5 w-5 rounded bg-slate-800 transition-transform ${
+          open ? "-translate-y-1.5 -rotate-45" : ""
+        }`}
+      />
+    </div>
+  );
+}

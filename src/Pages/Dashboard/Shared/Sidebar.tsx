@@ -1,17 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 import clsx from "clsx";
 import logoimg from "../../../assets/images/LogoDashboard.png";
 import Image from "../../../components/Tags/Image/Image";
 import { DotSvg } from "../../../components/SvgContainer/SVgContainer";
 import { useState } from "react";
+import { useLogoutMutation } from "../../../redux/features/auth/auth.api";
 
 
 const Sidebar = ({ navLinks, showSidebar, setShowSidebar }: any) => {
   const [isActive, setisActive] = useState<string | null>(
     navLinks[0].id
   );
+
+    const [logout, { isLoading }] = useLogoutMutation();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+      try {
+        await logout().unwrap(); // calls /auth/logout
+      } catch {
+        // even if server fails, force client logout
+      } finally {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userData");
+        navigate("/login");
+      }
+    };
 
   return (
     <aside
@@ -66,7 +82,13 @@ const Sidebar = ({ navLinks, showSidebar, setShowSidebar }: any) => {
           </nav>
         </div>
 
-
+        <button
+          onClick={handleLogout}
+          disabled={isLoading}
+          className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-50"
+        >
+          {isLoading ? "Logging out..." : "Logout"}
+        </button>
       </div>
     </aside>
   );

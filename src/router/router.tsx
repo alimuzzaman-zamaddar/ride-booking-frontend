@@ -11,6 +11,13 @@ import DriverDashboardPage from "../Pages/Dashboard/DriverDashboardPage";
 import AdminDashboardPage from "../Pages/Dashboard/AdminDashboardPage";
 import RideRequest from "../Pages/Dashboard/Rider/RideRequest";
 import MyRides from "../Pages/Dashboard/Rider/MyRides";
+import GoOnline from "../Pages/Dashboard/Driver/GoOnline";
+import AllUser from "../Pages/Dashboard/Admin/AllUser";
+import UserDetails from "../Pages/Dashboard/Admin/UserDetails";
+import About from "../Pages/About/About";
+import Features from "../Pages/Features/Features";
+import Contact from "../Pages/Contact/Contact";
+import FAQ from "../Pages/faq/FAQ";
 
 
 const userString = localStorage.getItem("userData");
@@ -29,6 +36,22 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/features",
+        element: <Features />,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
+      },
+      {
+        path: "/faq",
+        element: <FAQ />,
       },
     ],
   },
@@ -56,11 +79,23 @@ const router = createBrowserRouter([
 
       {
         path: "rideRequest",
-        element: <RideRequest/>
+        element: <RideRequest />,
       },
       {
         path: "myRides",
-        element: <MyRides/>
+        element: <MyRides />,
+      },
+      {
+        path: "goOnline",
+        element: <GoOnline />,
+      },
+      {
+        path: "users",
+        element: <AllUser />,
+      },
+      {
+        path: "users/:id",
+        element: <UserDetails />,
       },
     ],
   },

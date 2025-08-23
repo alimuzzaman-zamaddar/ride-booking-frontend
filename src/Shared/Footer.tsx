@@ -1,164 +1,143 @@
+// src/components/Footer.tsx
 import { Link } from "react-router-dom";
-import Paragraph from "../components/Tags/Paragraph/Paragraph";
-import Image from "../components/Tags/Image/Image";
-import logo from "../assets/images/footer-logo.png";
-import Button from "../components/Tags/Button/Button";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
-type navLinksScheam = {
-  label: string;
-  redirectLink: string;
-};
-
-type HotNavLinksSchema = {
-  title: string;
-  navLink: {
-    label: string;
-    redirectLink: string;
-  }[];
-};
-
-const hotNavLinks: HotNavLinksSchema[] = [
-  {
-    title: "Pages",
-    navLink: [
-      { label: "home", redirectLink: "/" },
-      { label: "about", redirectLink: "/about" },
-      { label: "services", redirectLink: "/" },
-      { label: "contact us", redirectLink: "/contact-us" },
-    ],
-  },
-  {
-    title: "Info",
-    navLink: [
-      { label: "styles guides", redirectLink: "/style-guides" },
-      { label: "liecense", redirectLink: "/liecense" },
-      { label: "chanelog", redirectLink: "/chanelog" },
-    ],
-  },
-  {
-    title: "Follow Us",
-    navLink: [
-      { label: "What's app", redirectLink: "/what's-app" },
-      { label: "Facebook", redirectLink: "/facebook" },
-      { label: "chanelog", redirectLink: "/chanelog" },
-    ],
-  },
-];
-
-const redirectLinkArr: navLinksScheam[] = [
-  {
-    label: "Privacy Policy",
-    redirectLink: "/privacy-policy",
-  },
-  {
-    label: "Terms of Service ",
-    redirectLink: "/terms-of-service",
-  },
-  {
-    label: " Cookies Settings",
-    redirectLink: "/cookies-settings",
-  },
-];
-
-const Footer = () => {
+export default function Footer() {
   return (
-    <footer className=" w-full h-auto py-10  xl:py-[100px] px-5   bg-primary-black ">
-      <div className="container flex flex-col relative  gap-y-8">
-        <div className="flex flex-col xl:flex-row w-full items-center gap-x-6  justify-between ">
-          <div className="flex w-full xl:w-1/2 flex-col  gap-y-[60px] mb-6 ">
-            <div className="flex flex-col gap-y-8">
-              <Image
-                Src={logo}
-                Alt="not found"
-                className="w-[232px] h-[54px] object-cover  "
-              />
-            </div>
-            <Paragraph
-              className=" max-w-[663px] text-base text-secondary-white font-[600] "
-              Txt={
-                "Join our newsletter to stay up to date on features and releases."
-              }
-            />
-            <div
-              data-aos="fade-up"
-              data-aos-delay="100"
-              className="max-w-[639px] w-full h-auto py-3 px-3 border-[1px] border-solid rounded-[8px] border-secondary-white cursor-pointer flex flex-row gap-x-2 "
-            >
-              <input
-                data-aos="fade-up"
-                data-aos-delay="100"
-                placeholder="Enter your email address"
-                className="w-full text-lg text-white font-normal outline-none px-3 "
-                type="email"
-              />
-              <Button
-                className="bg-white text-primary-gray hover:border-white  border-[1px] border-transparent  hover:bg-transparent hover:text-white cursor-pointer ease-in-out duration-300 py-1 xl:py-5 text-sm px-5 xl:px-10 xl:text-xl font-[600] leading-[164%] h-auto rounded-[8px] w-auto "
-                Txt="Submit"
-              />
-            </div>
-            <Paragraph
-              className=" max-w-[663px] text-base text-secondary-white font-[600] "
-              Txt={
-                "By subscribing you agree to with our Privacy Policy and provide consent to receive updates from our company."
-              }
-            />
+    <footer className="relative mt-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-200">
+      {/* decorative accent */}
+      <div className="absolute inset-x-0 -top-1 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-fuchsia-500" />
+
+      <div className="container mx-auto px-6 py-12 lg:py-16">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          {/* Brand */}
+          <div>
+            <h3 className="text-xl font-extrabold tracking-tight text-white">
+              Ride<span className="text-blue-500">Go</span>
+            </h3>
+            <p className="mt-3 text-sm text-slate-400 max-w-xs">
+              Your trusted partner for safe, fast and cashless rides across
+              Bangladesh. Anytime, anywhere.
+            </p>
           </div>
-          <ul className="flex w-full xl:w-1/2 flex-wrap sm:flex-row justify-between gap-y-4 xl:gap-y-0">
-            {hotNavLinks.map((item, idx) => {
-              return (
-                <div key={idx} className="flex  gap-y-6 flex-col">
-                  <Paragraph
-                    className="text-2xl text-white font-bold "
-                    Txt={item.title}
-                  />
-                  <ul className="flex  flex-col gap-y-6 ">
-                    {item.navLink.map((link, idx) => {
-                      return (
-                        <li key={idx}>
-                          <Link
-                            data-aos="fade-up"
-                            data-aos-delay="100"
-                            className="text-md xl:text-lg  capitalize text-secondary-white font-bold "
-                            to={link.redirectLink}
-                          >
-                            {" "}
-                            {link.label}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              );
-            })}
-          </ul>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-300">
+              Quick Links
+            </h4>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/rideRequest"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  Request a Ride
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/goOnline"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  Go Online (Drivers)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/users"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  Admin Panel
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-300">
+              Contact
+            </h4>
+            <ul className="mt-3 space-y-3 text-sm">
+              <li className="flex items-center gap-2">
+                <Mail size={16} className="text-blue-400" />
+                support@ridego.com
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone size={16} className="text-blue-400" />
+                +880 123 456 789
+              </li>
+              <li className="flex items-center gap-2">
+                <MapPin size={16} className="text-blue-400" />
+                Dhaka, Bangladesh
+              </li>
+            </ul>
+          </div>
+
+          {/* Social */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-300">
+              Follow Us
+            </h4>
+            <div className="mt-4 flex gap-3">
+              <a
+                href="#"
+                className="rounded-full bg-slate-700 p-2 hover:bg-blue-600 transition"
+              >
+                <Facebook size={18} />
+              </a>
+              <a
+                href="#"
+                className="rounded-full bg-slate-700 p-2 hover:bg-sky-400 transition"
+              >
+                <Twitter size={18} />
+              </a>
+              <a
+                href="#"
+                className="rounded-full bg-slate-700 p-2 hover:bg-pink-500 transition"
+              >
+                <Instagram size={18} />
+              </a>
+              <a
+                href="#"
+                className="rounded-full bg-slate-700 p-2 hover:bg-blue-500 transition"
+              >
+                <Linkedin size={18} />
+              </a>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-y-8 w-full ">
-          <hr
-            data-aos="fade-up"
-            data-aos-delay="100"
-            className="h-[1px] w-full border-1 border-secondry-gray "
-          />
-          <ul className="flex flex-row gap-x-5">
-            {redirectLinkArr.map((item, idx) => {
-              return (
-                <li data-aos="fade-up" data-aos-delay="100" key={idx}>
-                  <Link
-                    data-aos="fade-up"
-                    data-aos-delay="100"
-                    className=" text-xs xl:text-base text-secondary-white font-normal xl:font-[600] "
-                    to={item.redirectLink}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+
+        {/* Bottom strip */}
+        <div className="mt-12 border-t border-slate-700 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <p>© {new Date().getFullYear()} RideGo. All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link to="/privacy" className="hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-white">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

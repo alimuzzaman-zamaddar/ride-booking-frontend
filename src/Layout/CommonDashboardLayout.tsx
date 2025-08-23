@@ -34,7 +34,7 @@ const AdminNavLinks = [
   {
     id: 2,
     icon: FiSearch,
-    path: "#",
+    path: "users",
     title: "All Users",
   },
 

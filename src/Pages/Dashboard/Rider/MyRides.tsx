@@ -51,18 +51,18 @@ export default function MyRides() {
             className="border rounded-md p-4 shadow-sm bg-white"
           >
             <p>
-              <span className="font-semibold">Pickup:</span>{" "}
+              <span className="font-semibold">Pickup:</span>
               {ride.pickupLocation}
             </p>
             <p>
-              <span className="font-semibold">Destination:</span>{" "}
+              <span className="font-semibold">Destination:</span>
               {ride.destination}
             </p>
             <p>
               <span className="font-semibold">Status:</span> {ride.status}
             </p>
             <p>
-              <span className="font-semibold">Created At:</span>{" "}
+              <span className="font-semibold">Created At:</span>
               {new Date(ride.createdAt).toLocaleString()}
             </p>
 

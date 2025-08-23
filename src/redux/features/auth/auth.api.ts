@@ -18,10 +18,17 @@ const authApi = baseApi.injectEndpoints({
       }),
     }),
 
-
-
-
+    logout: builder.mutation<{ message: string }, void>({
+      query: () => {
+        const token = localStorage.getItem("authToken");
+        return {
+          url: "/auth/logout",
+          method: "POST",
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        };
+      },
+    }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation } = authApi;
+export const { useRegisterMutation, useLoginMutation,  useLogoutMutation } = authApi;
