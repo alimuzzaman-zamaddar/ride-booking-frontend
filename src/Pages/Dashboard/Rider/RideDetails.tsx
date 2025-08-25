@@ -96,12 +96,12 @@ export default function RideDetails() {
         </div>
 
         {/* Driver (optional) */}
-        {ride?.riderId || ride?.driverId ? (
+        {ride?.riderId || ride?.riderId ? (
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             <InfoCard label="Rider ID" value={String(ride.riderId)} />
             <InfoCard
               label="Driver ID"
-              value={ride.driverId ? String(ride.driverId) : "—"}
+              value={ride.riderId ? String(ride.riderId) : "—"}
             />
           </div>
         ) : null}

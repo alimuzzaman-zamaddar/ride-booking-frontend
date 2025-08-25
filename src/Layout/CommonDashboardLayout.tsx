@@ -29,6 +29,9 @@ const DriverNavLinks = [
     title: "complete rides",
   },
   { id: 3, icon: GrSchedule, path: "profile", title: "My profile" },
+  { id: 5, icon: GrSchedule, path: "online", title: "Go Online" },
+  { id: 6, icon: GrSchedule, path: "incomingRequests", title: "Ride Request" },
+  { id: 7, icon: GrSchedule, path: "activeRide", title: "Active Ride" },
 ];
 const AdminNavLinks = [
   { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },

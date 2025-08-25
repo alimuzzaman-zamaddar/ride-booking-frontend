@@ -59,13 +59,6 @@ export default function UserDetails() {
      }
    };
 
- const Row = ({ k, v }: { k: string; v: React.ReactNode }) => (
-
-    <div className="flex items-center justify-between gap-4 text-sm py-2">
-      <span className="text-gray-500">{k}</span>
-      <span className="font-medium text-gray-900">{v}</span>
-    </div>
-  );
 
   const rolePill =
     user.role === "admin"

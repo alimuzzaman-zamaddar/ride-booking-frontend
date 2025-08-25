@@ -31,7 +31,7 @@ export const profileApi = baseApi.injectEndpoints({
         method: "GET",
         headers: authHeader(),
       }),
-      providesTags: [{ type: "Me" as const, id: "SELF" }],
+      providesTags: [],
     }),
 
     updateMe: builder.mutation<
@@ -44,7 +44,7 @@ export const profileApi = baseApi.injectEndpoints({
         headers: { ...authHeader(), "Content-Type": "application/json" },
         data: body, // axiosBaseQuery uses `data`
       }),
-      invalidatesTags: [{ type: "Me" as const, id: "SELF" }],
+      invalidatesTags: [],
     }),
 
     changePassword: builder.mutation<

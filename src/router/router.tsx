@@ -11,7 +11,6 @@ import DriverDashboardPage from "../Pages/Dashboard/DriverDashboardPage";
 import AdminDashboardPage from "../Pages/Dashboard/AdminDashboardPage";
 import RideRequest from "../Pages/Dashboard/Rider/RideRequest";
 import MyRides from "../Pages/Dashboard/Rider/MyRides";
-import GoOnline from "../Pages/Dashboard/Driver/GoOnline";
 import AllUser from "../Pages/Dashboard/Admin/AllUser";
 import UserDetails from "../Pages/Dashboard/Admin/UserDetails";
 import About from "../Pages/About/About";
@@ -20,6 +19,9 @@ import Contact from "../Pages/Contact/Contact";
 import FAQ from "../Pages/faq/FAQ";
 import RideDetails from "../Pages/Dashboard/Rider/RideDetails";
 import Profile from "../Pages/Dashboard/Rider/Profile";
+import GoOnline from "../Pages/Dashboard/Driver/GoOnline";
+import IncomingRequests from "../Pages/Dashboard/Driver/IncomingRequests";
+import ActiveRide from "../Pages/Dashboard/Driver/ActiveRide";
 
 
 const userString = localStorage.getItem("userData");
@@ -88,10 +90,6 @@ const router = createBrowserRouter([
         element: <MyRides />,
       },
       {
-        path: "goOnline",
-        element: <GoOnline />,
-      },
-      {
         path: "users",
         element: <AllUser />,
       },
@@ -106,6 +104,18 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
+      },
+      {
+        path: "online",
+        element: <GoOnline />,
+      },
+      {
+        path: "incomingRequests",
+        element: <IncomingRequests />,
+      },
+      {
+        path: "activeRide",
+        element: <ActiveRide />,
       },
     ],
   },

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // src/redux/features/ride/ride.api.ts
 import { baseApi } from "../../baseApi";
 
