@@ -18,6 +18,8 @@ import About from "../Pages/About/About";
 import Features from "../Pages/Features/Features";
 import Contact from "../Pages/Contact/Contact";
 import FAQ from "../Pages/faq/FAQ";
+import RideDetails from "../Pages/Dashboard/Rider/RideDetails";
+import Profile from "../Pages/Dashboard/Rider/Profile";
 
 
 const userString = localStorage.getItem("userData");
@@ -96,6 +98,14 @@ const router = createBrowserRouter([
       {
         path: "users/:id",
         element: <UserDetails />,
+      },
+      {
+        path: "ride/:id",
+        element: <RideDetails />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
     ],
   },

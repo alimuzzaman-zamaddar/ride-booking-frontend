@@ -11,12 +11,13 @@ import { useState } from "react";
 const RiderNavLinks = [
   { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },
   {
-    id: 3,
+    id: 2,
     icon: GrSchedule,
     path: "rideRequest",
     title: "Request a ride",
   },
   { id: 3, icon: GrSchedule, path: "myRides", title: "My Rides" },
+  { id: 3, icon: GrSchedule, path: "profile", title: "My profile" },
 ];
 
 const DriverNavLinks = [
@@ -27,7 +28,7 @@ const DriverNavLinks = [
     path: "#",
     title: "complete rides",
   },
-
+  { id: 3, icon: GrSchedule, path: "profile", title: "My profile" },
 ];
 const AdminNavLinks = [
   { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },
@@ -37,7 +38,7 @@ const AdminNavLinks = [
     path: "users",
     title: "All Users",
   },
-
+  { id: 3, icon: GrSchedule, path: "profile", title: "My profile" },
 ];
 
 const CommonDashboardLayout = () => {

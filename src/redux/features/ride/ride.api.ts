@@ -36,6 +36,16 @@ export type Ride = {
   updatedAt: string;
 };
 
+
+export type GetRidesResponse = {
+  rides: Ride[];
+};
+
+export type GetRideByIdResponse = {
+  ride: Ride;
+};
+
+
 export type GetMyRidesResponse = {
   rides: Ride[];
 };
@@ -74,6 +84,52 @@ export const rideApi = baseApi.injectEndpoints({
           : [{ type: "Ride" as const, id: "LIST" }],
     }),
 
+    // 🚀 NEW: Get Rides with Filters + Pagination
+    getRidesForRider: builder.query<
+      GetRidesResponse,
+      {
+        page?: number;
+        pageSize?: number;
+        status?: string;
+        startDate?: string;
+        endDate?: string;
+        minFare?: string;
+        maxFare?: string;
+      }
+    >({
+      query: params => {
+        const token = localStorage.getItem("authToken");
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.append("page", String(params.page));
+        if (params.pageSize)
+          searchParams.append("pageSize", String(params.pageSize));
+        if (params.status) searchParams.append("status", params.status);
+        if (params.startDate)
+          searchParams.append("startDate", params.startDate);
+        if (params.endDate) searchParams.append("endDate", params.endDate);
+        if (params.minFare) searchParams.append("minFare", params.minFare);
+        if (params.maxFare) searchParams.append("maxFare", params.maxFare);
+
+        return {
+          url: `/ride/me?${searchParams.toString()}`,
+          method: "GET",
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        };
+      },
+    }),
+
+    getRideById: builder.query<GetRideByIdResponse, string>({
+      query: (rideId) => {
+        const token = localStorage.getItem("authToken");
+        return {
+          url: `/ride/${rideId}`,
+          method: "GET",
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        };
+      },
+          
+    }),
+
     cancelRide: builder.mutation<CancelRideResponse, string>({
       query: rideId => {
         const token = localStorage.getItem("authToken");
@@ -90,7 +146,9 @@ export const rideApi = baseApi.injectEndpoints({
         { type: "Ride" as const, id: "LIST" },
       ],
     }),
+
+    
   }),
 });
 
-export const { useCreateRideRequestMutation, useGetMyRidesQuery, useCancelRideMutation } = rideApi;
+export const { useCreateRideRequestMutation, useGetMyRidesQuery, useCancelRideMutation,useGetRidesForRiderQuery,useGetRideByIdQuery } = rideApi;

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/pages/RideRequest.tsx
 import { useState } from "react";
-
 import toast from "react-hot-toast";
 import { useCreateRideRequestMutation } from "../../../redux/features/ride/ride.api";
 
@@ -22,10 +21,9 @@ export default function RideRequest() {
       const res = await createRide({ pickupLocation, destination }).unwrap();
       toast.success(res?.message ?? "Ride requested successfully");
 
-      // optional: clear form
+      // Optional: Clear form
       setPickupLocation("");
       setDestination("");
-      // optional: navigate(`/ride/${res.ride._id}`)
     } catch (e: any) {
       const msg =
         e?.data?.message || e?.message || "Failed to create ride request";
@@ -43,7 +41,7 @@ export default function RideRequest() {
           <input
             value={pickupLocation}
             onChange={e => setPickupLocation(e.target.value)}
-            placeholder="Pickup (e.g., dhaka)"
+            placeholder="Pickup (e.g., Dhaka)"
             className="w-full border rounded px-3 py-2"
           />
         </div>
@@ -52,7 +50,7 @@ export default function RideRequest() {
           <input
             value={destination}
             onChange={e => setDestination(e.target.value)}
-            placeholder="Destination (e.g., narail lahuriaa)"
+            placeholder="Destination (e.g., Narail)"
             className="w-full border rounded px-3 py-2"
           />
         </div>
@@ -65,14 +63,14 @@ export default function RideRequest() {
           {isLoading ? "Submitting..." : "Send Ride Request"}
         </button>
 
-        {/* server error (defensive because RTKQ error shapes vary) */}
+        {/* Server Error */}
         {error ? (
           <p className="text-red-600 text-sm mt-3">
             {(error as any)?.data?.message || "Something went wrong"}
           </p>
         ) : null}
 
-        {/* quick preview of success response */}
+        {/* Quick preview of success response */}
         {data ? (
           <div className="mt-4 text-sm">
             <p className="font-medium">{data.message}</p>
