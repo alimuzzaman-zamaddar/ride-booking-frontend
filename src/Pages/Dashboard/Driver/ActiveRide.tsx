@@ -18,7 +18,9 @@ export default function ActiveRide() {
     | "picked_up"
     | "in_transit"
     | "completed"
-    | "canceled";
+    | "canceled"
+    | "ongoing"
+    | "cancelled";
 
   type Ride = {
     _id: string;
