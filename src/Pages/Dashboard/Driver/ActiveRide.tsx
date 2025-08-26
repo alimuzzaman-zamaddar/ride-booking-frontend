@@ -1,15 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import toast from "react-hot-toast";
-import { useDriverUpdateRideStatusMutation, useGetActiveRideQuery } from "../../../redux/features/driver/driver.api";
+import {
+  useDriverUpdateRideStatusMutation,
+  useGetActiveRideQuery,
+} from "../../../redux/features/driver/driver.api";
 import Loader from "../../../components/Loader/Loader";
-
 
 export default function ActiveRide() {
   const { data, isLoading, error, refetch } = useGetActiveRideQuery();
   const [updateStatus, { isLoading: isUpdating }] =
     useDriverUpdateRideStatusMutation();
 
-  const ride = data?.ride ?? null;
+  // ✅ Match backend status names
+  type RideStatus =
+    | "requested"
+    | "accepted"
+    | "picked_up"
+    | "in_transit"
+    | "completed"
+    | "canceled";
+
+  type Ride = {
+    _id: string;
+    pickupLocation: string;
+    destination: string;
+    createdAt: string;
+    status: RideStatus;
+  };
+
+  const ride: Ride | null = data?.ride ?? null;
 
   const doUpdate = async (
     status: "picked_up" | "in_transit" | "completed" | "canceled"
@@ -67,6 +86,7 @@ export default function ActiveRide() {
           </div>
 
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {/* accepted → picked_up or canceled */}
             {ride.status === "accepted" && (
               <>
                 <button
@@ -86,6 +106,7 @@ export default function ActiveRide() {
               </>
             )}
 
+            {/* picked_up → in_transit or canceled */}
             {ride.status === "picked_up" && (
               <>
                 <button
@@ -105,6 +126,7 @@ export default function ActiveRide() {
               </>
             )}
 
+            {/* in_transit → completed */}
             {ride.status === "in_transit" && (
               <button
                 onClick={() => doUpdate("completed")}

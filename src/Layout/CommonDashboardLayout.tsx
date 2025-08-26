@@ -32,6 +32,8 @@ const DriverNavLinks = [
   { id: 5, icon: GrSchedule, path: "online", title: "Go Online" },
   { id: 6, icon: GrSchedule, path: "incomingRequests", title: "Ride Request" },
   { id: 7, icon: GrSchedule, path: "activeRide", title: "Active Ride" },
+  { id: 7, icon: GrSchedule, path: "earnings", title: "My Earnings" },
+  { id: 8, icon: GrSchedule, path: "history", title: "Ride History" },
 ];
 const AdminNavLinks = [
   { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },

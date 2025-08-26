@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import SignUp from "../Pages/Auth/sign-up";
 import Login from "../Pages/Auth/Login";
-
 import Layout from "../Layout/Layout";
 import Home from "../Pages/home/Home";
 import CommonDashboardLayout from "../Layout/CommonDashboardLayout";
@@ -22,15 +21,15 @@ import Profile from "../Pages/Dashboard/Rider/Profile";
 import GoOnline from "../Pages/Dashboard/Driver/GoOnline";
 import IncomingRequests from "../Pages/Dashboard/Driver/IncomingRequests";
 import ActiveRide from "../Pages/Dashboard/Driver/ActiveRide";
+import AccountStatus from "../Pages/Auth/AccountStatus";
+import ProtectedRoute from "./ProtectedRoute";
+import DriverEarnings from "../Pages/Dashboard/Driver/DriverEarnings";
+import DriverRideHistory from "../Pages/Dashboard/Driver/DriverRideHistory";
 
 
 const userString = localStorage.getItem("userData");
 const user = userString ? JSON.parse(userString) : null;
-
-// console.log(user);
-
-const role = user?.role; // use optional chaining to avoid errors
-// console.log(role);
+const role = user?.role; 
 
 const router = createBrowserRouter([
   {
@@ -62,63 +61,66 @@ const router = createBrowserRouter([
 
   { path: "/sign-up", element: <SignUp /> },
   { path: "/login", element: <Login /> },
+  { path: "/status", element: <AccountStatus /> },
 
   {
-    path: "/dashboard/",
-    element: <CommonDashboardLayout />,
+    path: "/dashboard",
+    element: <ProtectedRoute />, // ⬅️ guard
     children: [
       {
-        index: true,
-        element:
-          role === "rider" ? (
-            <RiderDashboardPage />
-          ) : role === "driver" ? (
-            <DriverDashboardPage />
-          ) : role === "admin" ? (
-            <AdminDashboardPage />
-          ) : (
-            <DashboardPage />
-          ),
-      },
-
-      {
-        path: "rideRequest",
-        element: <RideRequest />,
-      },
-      {
-        path: "myRides",
-        element: <MyRides />,
-      },
-      {
-        path: "users",
-        element: <AllUser />,
-      },
-      {
-        path: "users/:id",
-        element: <UserDetails />,
-      },
-      {
-        path: "ride/:id",
-        element: <RideDetails />,
-      },
-      {
-        path: "profile",
-        element: <Profile />,
-      },
-      {
-        path: "online",
-        element: <GoOnline />,
-      },
-      {
-        path: "incomingRequests",
-        element: <IncomingRequests />,
-      },
-      {
-        path: "activeRide",
-        element: <ActiveRide />,
+        element: <CommonDashboardLayout />,
+        children: [
+          {
+            index: true,
+            element:
+              role === "rider" ? (
+                <RiderDashboardPage />
+              ) : role === "driver" ? (
+                <DriverDashboardPage />
+              ) : role === "admin" ? (
+                <AdminDashboardPage />
+              ) : (
+                <DashboardPage />
+              ),
+          },
+          { path: "rideRequest", element: <RideRequest /> },
+          { path: "myRides", element: <MyRides /> },
+          { path: "goOnline", element: <GoOnline /> },
+          { path: "users", element: <AllUser /> },
+          { path: "users/:id", element: <UserDetails /> },
+              {
+                path: "ride/:id",
+                element: <RideDetails />,
+              },
+              {
+                path: "profile",
+                element: <Profile />,
+              },
+              {
+                path: "online",
+                element: <GoOnline />,
+              },
+              {
+                path: "incomingRequests",
+                element: <IncomingRequests />,
+              },
+              {
+                path: "activeRide",
+                element: <ActiveRide />,
+              },
+              {
+                path: "earnings",
+                element: <DriverEarnings />,
+              },
+              {
+                path: "history",
+                element: <DriverRideHistory />,
+              },
+        ],
       },
     ],
   },
 ]);
 
 export default router;
+
