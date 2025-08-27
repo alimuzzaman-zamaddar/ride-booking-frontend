@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import OfflineBanner from "../../components/Drivers/OfflineBanner";
+import Loader from "../../components/Loader/Loader";
 import { useGetMeQuery } from "../../redux/features/ride/profile.api";
 
 
@@ -14,7 +15,7 @@ const DriverDashboardPage = () => {
     <>
       {isLoading ? (
         <div className="min-h-[60vh] flex items-center justify-center">
-          <div className="loader">Loading...</div>
+       <Loader className="mt-10 text-7xl my-10 text-primary-blue" />
         </div>
       ) : (
         <section className="flex flex-col h-auto justify-between p-4">

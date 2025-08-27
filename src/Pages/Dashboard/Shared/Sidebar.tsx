@@ -2,11 +2,10 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 import clsx from "clsx";
-import logoimg from "../../../assets/images/LogoDashboard.png";
-import Image from "../../../components/Tags/Image/Image";
 import { DotSvg } from "../../../components/SvgContainer/SVgContainer";
 import { useState } from "react";
 import { useLogoutMutation } from "../../../redux/features/auth/auth.api";
+import Logo from "../../../components/Logo/Logo";
 
 
 const Sidebar = ({ navLinks, showSidebar, setShowSidebar }: any) => {
@@ -45,7 +44,7 @@ const Sidebar = ({ navLinks, showSidebar, setShowSidebar }: any) => {
       <div className="p-6 pt-0 xl:pt-6 flex flex-col justify-between h-full">
         <div>
           <Link to="/">
-            <Image Alt="Logo" Src={logoimg} className="mb-10" />
+            <Logo className="h-10 w-auto mx-auto mb-8" />
           </Link>
 
           <nav className="flex flex-col gap-2">

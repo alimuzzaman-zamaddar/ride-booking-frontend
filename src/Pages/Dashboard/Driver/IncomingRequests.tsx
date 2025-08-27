@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import Loader from "../../../components/Loader/Loader";
 import { useAcceptRideMutation, useGetOpenRequestsQuery, useRejectRideMutation } from "../../../redux/features/driver/driver.api";
 import { useGetMeQuery } from "../../../redux/features/ride/profile.api";
 import toast from "react-hot-toast";
@@ -48,8 +49,9 @@ export default function IncomingRequests() {
       toast.error(e?.data?.message || e?.message || "Reject failed");
     }
   };
-
-  if (isLoading) return <div className="p-6">Loading...</div>;
+  if (isLoading) {
+    return <Loader className="mt-10 text-7xl my-10 text-primary-blue" />;
+  }
   if (error)
     return <div className="p-6 text-red-600">Failed to load requests</div>;
 

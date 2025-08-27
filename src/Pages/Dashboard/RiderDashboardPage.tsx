@@ -10,7 +10,8 @@ type ActiveStatus =
   | "accepted"
   | "picked_up"
   | "in_transit"
-  | "ongoing"; // include legacy "ongoing" just in case
+  | "ongoing" | "completed"
+  | "canceled"; 
 
 const RiderDashboardPage = () => {
   const navigate = useNavigate();
@@ -27,13 +28,15 @@ const RiderDashboardPage = () => {
       "picked_up",
       "in_transit",
       "ongoing",
+       "completed",
+      "canceled"
     ];
     const active = rides.filter(r =>
       activeStatuses.includes(r.status as ActiveStatus)
     ).length;
     const completed = rides.filter(r => r.status === "completed").length;
     const canceled = rides.filter(
-      r => r.status === "cancelled"
+      r => r.status === "canceled"
     ).length;
 
     const totalSpent = rides
@@ -61,7 +64,9 @@ const RiderDashboardPage = () => {
   }
 
   return (
-    <section className="flex flex-col gap-6">
+    <>
+  {isLoading ? (<Loader className="mt-10 text-7xl my-10 text-primary-blue" />
+      ) : (     <section className="flex flex-col gap-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
@@ -195,7 +200,9 @@ const RiderDashboardPage = () => {
           </ul>
         )}
       </div>
-    </section>
+      </section>
+      )}
+    </>
   );
 };
 

@@ -6,6 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { ScrollRestoration } from "react-router-dom";
 import { GrSchedule } from "react-icons/gr";
 import { useState } from "react";
+import { useGetMeQuery } from "../redux/features/ride/profile.api";
 
 
 const RiderNavLinks = [
@@ -49,12 +50,22 @@ const AdminNavLinks = [
 const CommonDashboardLayout = () => {
   const [showSidebar, setShowSidebar] = useState(false);
 
-const userString = localStorage.getItem("userData");
-const user = userString ? JSON.parse(userString) : null;
+  const { data, isLoading, error } = useGetMeQuery();
+  
+  if(isLoading) return <div>Loading...</div>;
+  if(error) return <div>Error loading user data</div>;
 
-console.log(user);
+  console.log(data?.data?.role, "data from layout");
+  
 
-const role = user?.role; // use optional chaining to avoid errors
+
+
+// const userString = localStorage.getItem("userData");
+// const user = userString ? JSON.parse(userString) : null;
+
+// console.log(user);
+
+const role = data?.data?.role; // use optional chaining to avoid errors
 console.log(role);
 
   

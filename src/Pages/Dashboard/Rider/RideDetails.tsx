@@ -1,15 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams, Link } from "react-router-dom";
-import { useGetRideByIdQuery } from "../../../redux/features/ride/ride.api";
+import {
+  useGetRideByIdQuery,
+  useCancelRideMutation,
+} from "../../../redux/features/ride/ride.api";
+import { useGetMeQuery } from "../../../redux/features/ride/profile.api";
 import Loader from "../../../components/Loader/Loader";
+import toast from "react-hot-toast";
 
 export default function RideDetails() {
   const { id = "" } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useGetRideByIdQuery(id, { skip: !id });
+  const { data, isLoading, error, refetch } = useGetRideByIdQuery(id, {
+    skip: !id,
+  });
+  const { data: meData } = useGetMeQuery();
+  const [cancelRide, { isLoading: isCancelling }] = useCancelRideMutation();
+
   const ride = data?.ride;
+  const me = meData?.data;
 
   if (!id) return <p className="p-4 text-red-600">Invalid ride id</p>;
-  if (isLoading) return <Loader className="mt-10 text-7xl my-10 text-primary-blue" />;
+  if (isLoading)
+    return <Loader className="mt-10 text-7xl my-10 text-primary-blue" />;
 
   if (error) {
     const msg = (error as any)?.data?.message || "Failed to load ride";
@@ -18,6 +30,25 @@ export default function RideDetails() {
   if (!ride) return <p className="p-4">Ride not found.</p>;
 
   const badge = getStatusBadge(ride.status);
+
+  // Rider can cancel their own ride only if status is "requested"
+  const canCancel =
+    me?.role === "rider" &&
+    ride.status === "requested" &&
+    String(ride.riderId) === String(me._id);
+
+  const onCancel = async () => {
+    if (!id) return;
+    const ok = window.confirm("Cancel this ride?");
+    if (!ok) return;
+    try {
+      const res = await cancelRide(id).unwrap();
+      toast.success(res.message || "Ride canceled");
+      refetch();
+    } catch (e: any) {
+      toast.error(e?.data?.message || "Failed to cancel ride");
+    }
+  };
 
   return (
     <div className="min-h-screen py-8">
@@ -31,12 +62,24 @@ export default function RideDetails() {
             Track every step of your trip
           </p>
         </div>
-        <Link
-          to="/dashboard/history"
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
-        >
-          Back to history
-        </Link>
+        <div className="flex items-center gap-3">
+          {canCancel ? (
+            <button
+              onClick={onCancel}
+              disabled={isCancelling}
+              className="rounded-xl bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-rose-700 disabled:opacity-50"
+            >
+              {isCancelling ? "Cancelling..." : "Cancel Ride"}
+            </button>
+          ) : null}
+
+          <Link
+            to="/dashboard/myRides"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+          >
+            Back to history
+          </Link>
+        </div>
       </div>
 
       <div
@@ -95,13 +138,13 @@ export default function RideDetails() {
           </ol>
         </div>
 
-        {/* Driver (optional) */}
-        {ride?.riderId || ride?.riderId ? (
+        {/* Rider/Driver IDs — FIXED */}
+        {ride?.riderId || ride?.driverId ? (
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             <InfoCard label="Rider ID" value={String(ride.riderId)} />
             <InfoCard
               label="Driver ID"
-              value={ride.riderId ? String(ride.riderId) : "—"}
+              value={ride.driverId ? String(ride.driverId) : "—"}
             />
           </div>
         ) : null}
@@ -121,7 +164,9 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
       <p className="text-xs font-medium text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-slate-900 break-all">{value}</p>
+      <p className="mt-1 text-sm font-semibold text-slate-900 break-all">
+        {value}
+      </p>
     </div>
   );
 }
@@ -132,6 +177,8 @@ function getStatusBadge(status: string) {
       return { label: "Requested", cls: "bg-amber-100 text-amber-800" };
     case "accepted":
       return { label: "Accepted", cls: "bg-blue-100 text-blue-800" };
+    case "picked_up":
+      return { label: "Picked Up", cls: "bg-cyan-100 text-cyan-800" };
     case "in_transit":
       return { label: "In Transit", cls: "bg-indigo-100 text-indigo-800" };
     case "completed":
@@ -145,14 +192,44 @@ function getStatusBadge(status: string) {
 
 function timelineFromStatus(status: string) {
   const steps = [
-    { key: "requested", title: "Ride requested", hint: "We’re finding a driver", dot: "bg-amber-400" },
-    { key: "accepted", title: "Driver accepted", hint: "Driver is en route", dot: "bg-blue-400" },
-    { key: "in_transit", title: "In transit", hint: "Ride in progress", dot: "bg-indigo-400" },
-    { key: "completed", title: "Completed", hint: "Trip finished", dot: "bg-emerald-500" },
-    { key: "canceled", title: "Canceled", hint: "This ride was canceled", dot: "bg-rose-500" },
+    {
+      key: "requested",
+      title: "Ride requested",
+      hint: "We’re finding a driver",
+      dot: "bg-amber-400",
+    },
+    {
+      key: "accepted",
+      title: "Driver accepted",
+      hint: "Driver is en route",
+      dot: "bg-blue-400",
+    },
+    {
+      key: "picked_up",
+      title: "Picked up",
+      hint: "Passenger onboard",
+      dot: "bg-cyan-400",
+    },
+    {
+      key: "in_transit",
+      title: "In transit",
+      hint: "Ride in progress",
+      dot: "bg-indigo-400",
+    },
+    {
+      key: "completed",
+      title: "Completed",
+      hint: "Trip finished",
+      dot: "bg-emerald-500",
+    },
+    {
+      key: "canceled",
+      title: "Canceled",
+      hint: "This ride was canceled",
+      dot: "bg-rose-500",
+    },
   ];
-  // show up to the current state
-  const index = steps.findIndex(s => s.key === status);
-  if (index === -1) return steps.slice(0, 1);
-  return steps.slice(0, index + 1);
+  const idx = steps.findIndex(s => s.key === status);
+  if (idx === -1) return steps.slice(0, 1);
+  return steps.slice(0, idx + 1);
 }

@@ -25,18 +25,39 @@ export type CreateRideResponse = {
 };
 
 
+// export type Ride = {
+//   _id: string;
+//   riderId: string;
+//   pickupLocation: string;
+//   destination: string;
+//   status: "requested" | "accepted" | "ongoing" | "completed" | "cancelled";
+//   rideCost: number;
+//   earnings: number;
+//   createdAt: string;
+//   updatedAt: string;
+// };
 export type Ride = {
   _id: string;
-  riderId: string;
   pickupLocation: string;
   destination: string;
-  status: "requested" | "accepted" | "ongoing" | "completed" | "cancelled";
-  rideCost: number;
-  earnings: number;
+  status:
+    | "requested"
+    | "accepted"
+    | "picked_up"
+    | "in_transit"
+    | "completed"
+    | "canceled";
+  rideCost?: number;
+  earnings?: number;
+  riderId: string;
+  driverId?: string | null;
   createdAt: string;
   updatedAt: string;
 };
-
+const authHeader = () => {
+  const token = localStorage.getItem("authToken");
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
+};
 
 export type GetRidesResponse = {
   rides: Ride[];
@@ -120,7 +141,7 @@ export const rideApi = baseApi.injectEndpoints({
     }),
 
     getRideById: builder.query<GetRideByIdResponse, string>({
-      query: (rideId) => {
+      query: rideId => {
         const token = localStorage.getItem("authToken");
         return {
           url: `/ride/${rideId}`,
@@ -128,27 +149,17 @@ export const rideApi = baseApi.injectEndpoints({
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         };
       },
-          
     }),
 
-    cancelRide: builder.mutation<CancelRideResponse, string>({
-      query: rideId => {
-        const token = localStorage.getItem("authToken");
-        return {
-          url: `/ride/${rideId}/cancel`,
-          method: "PATCH",
-          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-        };
-      },
-      // The error you saw disappears once tagTypes includes "Ride"
+    cancelRide: builder.mutation<{ message: string; ride: Ride }, string>({
+      query: id => ({
+        url: `/ride/${id}/cancel`,
+        method: "PATCH",
+        headers: authHeader(),
+      }),
       // @ts-ignore
-      invalidatesTags: (_res, _err, rideId) => [
-        { type: "Ride" as const, id: rideId },
-        { type: "Ride" as const, id: "LIST" },
-      ],
+      invalidatesTags: (_res, _err, id) => [{ type: "Ride" as const, id }],
     }),
-
-    
   }),
 });
 
