@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// src/pages/admin/UserDetails.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// src/pages/admin/UserDetails.tsx
 import { useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import Loader from "../../../components/Loader/Loader";
@@ -8,6 +8,8 @@ import {
   useGetUserByIdQuery,
   useBlockUserMutation,
   useApproveDriverMutation,
+  // ⬇️ NEW import
+  useSuspendDriverMutation,
 } from "../../../redux/features/admin/admin.api";
 import {
   ArrowLeft,
@@ -17,14 +19,23 @@ import {
   User2,
   BadgeCheck,
   Activity,
+  PauseCircle,
+  PlayCircle,
 } from "lucide-react";
 
 export default function UserDetails() {
   const { id = "" } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useGetUserByIdQuery(id, { skip: !id });
- const [blockUser, { isLoading: isChanging }] = useBlockUserMutation();
-   const [approveDriver, { isLoading: isApproving }] =
-     useApproveDriverMutation();
+  // ⬇️ include refetch so we can refresh flags after actions
+  const { data, isLoading, error, refetch } = useGetUserByIdQuery(id, {
+    skip: !id,
+  });
+
+  const [blockUser, { isLoading: isChanging }] = useBlockUserMutation();
+  const [approveDriver, { isLoading: isApproving }] =
+    useApproveDriverMutation();
+  // ⬇️ NEW mutation
+  const [suspendDriver, { isLoading: isSuspending }] =
+    useSuspendDriverMutation();
 
   const user = data?.data;
 
@@ -38,27 +49,47 @@ export default function UserDetails() {
   }
   if (!user) return <p className="p-4">User not found.</p>;
 
-  const handleToggle = async () => {
+  const handleToggleBlock = async () => {
     try {
       const res = await blockUser({
         userId: user._id,
         isBlocked: !user.isBlocked,
       }).unwrap();
-      toast.success(res.message);
+      toast.success(
+        res.message || (user.isBlocked ? "User unblocked" : "User blocked")
+      );
+      refetch();
     } catch (e: any) {
       toast.error(e?.data?.message || "Update failed");
     }
- };
- 
-   const handleApprove = async () => {
-     try {
-       const res = await approveDriver(user._id).unwrap();
-       toast.success(res.message || "Driver approved");
-     } catch (e: any) {
-       toast.error(e?.data?.message || "Approve failed");
-     }
-   };
+  };
 
+  const handleApprove = async () => {
+    try {
+      const res = await approveDriver(user._id).unwrap();
+      toast.success(res.message || "Driver approved");
+      refetch();
+    } catch (e: any) {
+      toast.error(e?.data?.message || "Approve failed");
+    }
+  };
+
+  // ⬇️ NEW: suspend / unsuspend
+  const handleToggleSuspend = async () => {
+    try {
+      const next = !user.isSuspended;
+      const res = await suspendDriver({
+        id: user._id,
+        isSuspended: next,
+      }).unwrap();
+      toast.success(
+        res.message || (next ? "Driver suspended" : "Driver unsuspended")
+      );
+      refetch();
+    } catch (e: any) {
+      toast.error(e?.data?.message || "Suspend update failed");
+    }
+  };
 
   const rolePill =
     user.role === "admin"
@@ -146,48 +177,79 @@ export default function UserDetails() {
               </div>
             </div>
 
-            {/* Approve button (only for not-yet-approved drivers) */}
-            {user.role === "driver" && !user.isApproved && (
-              <button
-                onClick={handleApprove}
-                disabled={isApproving}
-                className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
-              >
-                {isApproving ? (
-                  "Approving..."
-                ) : (
-                  <>
-                    <BadgeCheck size={16} /> Approve Driver
-                  </>
-                )}
-              </button>
-            )}
+            {/* right-side action buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Approve (drivers only, if not approved) */}
+              {user.role === "driver" && !user.isApproved && (
+                <button
+                  onClick={handleApprove}
+                  disabled={isApproving}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {isApproving ? (
+                    "Approving..."
+                  ) : (
+                    <>
+                      <BadgeCheck size={16} /> Approve Driver
+                    </>
+                  )}
+                </button>
+              )}
 
-            {/* action button */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleToggle}
-                disabled={isChanging}
-                className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all ${
-                  user.isBlocked
-                    ? "bg-emerald-600 hover:bg-emerald-700"
-                    : "bg-rose-600 hover:bg-rose-700"
-                } disabled:bg-gray-400`}
-              >
-                {isChanging ? (
-                  "Processing..."
-                ) : user.isBlocked ? (
-                  <>
-                    <CheckCircle2 size={16} />
-                    Unblock User
-                  </>
-                ) : (
-                  <>
-                    <Ban size={16} />
-                    Block User
-                  </>
-                )}
-              </button>
+              {/* Suspend / Unsuspend (drivers only) */}
+              {user.role === "driver" && (
+                <button
+                  onClick={handleToggleSuspend}
+                  disabled={isSuspending}
+                  className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all ${
+                    user.isSuspended
+                      ? "bg-emerald-600 hover:bg-emerald-700"
+                      : "bg-orange-600 hover:bg-orange-700"
+                  } disabled:bg-gray-400`}
+                  title={
+                    user.isSuspended ? "Unsuspend driver" : "Suspend driver"
+                  }
+                >
+                  {isSuspending ? (
+                    "Processing..."
+                  ) : user.isSuspended ? (
+                    <>
+                      <PlayCircle size={16} /> Unsuspend
+                    </>
+                  ) : (
+                    <>
+                      <PauseCircle size={16} /> Suspend
+                    </>
+                  )}
+                </button>
+              )}
+
+              {/* Block / Unblock (all non-admins) */}
+              {user.role !== "admin" && (
+                <button
+                  onClick={handleToggleBlock}
+                  disabled={isChanging}
+                  className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all ${
+                    user.isBlocked
+                      ? "bg-emerald-600 hover:bg-emerald-700"
+                      : "bg-rose-600 hover:bg-rose-700"
+                  } disabled:bg-gray-400`}
+                >
+                  {isChanging ? (
+                    "Processing..."
+                  ) : user.isBlocked ? (
+                    <>
+                      <CheckCircle2 size={16} />
+                      Unblock User
+                    </>
+                  ) : (
+                    <>
+                      <Ban size={16} />
+                      Block User
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 

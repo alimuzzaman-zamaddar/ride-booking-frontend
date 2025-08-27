@@ -27,6 +27,7 @@ export type GetAllUsersResponse = {
   data: User[];
 };
 
+
 const authHeader = () => {
   const token = localStorage.getItem("authToken");
   return token ? { Authorization: `Bearer ${token}` } : undefined;
@@ -62,6 +63,37 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: (_res, _err, id) => [{ type: "Users" as const, id }],
     }),
 
+    suspendDriver: builder.mutation<
+      {
+        statusCode: number;
+        success: boolean;
+        message: string;
+        data: {
+          _id: string;
+          email: string;
+          role: "admin" | "driver" | "rider";
+          isSuspended?: boolean;
+        };
+      },
+      { id: string; isSuspended: boolean }
+    >({
+      query: ({ id, isSuspended }) => ({
+        url: `/drivers/suspend/${id}`,
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+        data: { isSuspended },
+      }),
+      // optional — if you already use tagTypes: ["User"]
+      // @ts-ignore
+      invalidatesTags: (_res, _err, { id }) => [
+        { type: "User" as const, id },
+        { type: "User" as const, id: "LIST" },
+      ],
+    }),
+
     // PATCH /users/block/:id  (body: { isBlocked: boolean })
     blockUser: builder.mutation<
       {
@@ -91,10 +123,7 @@ export const adminApi = baseApi.injectEndpoints({
       ],
     }),
 
-
-
-
-        approveDriver: builder.mutation<
+    approveDriver: builder.mutation<
       {
         statusCode: number;
         success: boolean;
@@ -108,7 +137,7 @@ export const adminApi = baseApi.injectEndpoints({
       },
       string // userId (driverId)
     >({
-      query: (userId) => ({
+      query: userId => ({
         url: `/drivers/approve/${userId}`,
         method: "PATCH",
         headers: { ...authHeader(), "Content-Type": "application/json" },
@@ -127,5 +156,6 @@ export const {
   useGetAllUsersQuery,
   useGetUserByIdQuery,
  useBlockUserMutation,
-  useApproveDriverMutation
+  useApproveDriverMutation,
+  useSuspendDriverMutation
 } = adminApi;
