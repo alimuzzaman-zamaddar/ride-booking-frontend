@@ -49,7 +49,7 @@ const DriverDashboardPage = () => {
   const activeRide = activeData?.ride ?? null;
 
   const blockedOrSuspended = me?.isBlocked || me?.isSuspended;
-  const offlineNotice = !me?.isOnline;
+  // const offlineNotice = !me?.isOnline;
 
   // Loading skeleton
   if (meLoading)
