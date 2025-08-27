@@ -158,7 +158,7 @@ const RiderDashboardPage = () => {
             Recent Rides
           </h3>
           <button
-            onClick={() => navigate("/dashboard/history")}
+            onClick={() => navigate("/dashboard/myRides")}
             className="text-xs font-semibold text-slate-600 hover:text-slate-900"
           >
             View all →
