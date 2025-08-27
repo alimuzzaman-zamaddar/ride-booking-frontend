@@ -4,16 +4,17 @@ import  { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link,  } from "react-router-dom";
 import { setToken } from "../../redux/slice/authSlice";
 import { useLoginMutation } from "../../redux/features/auth/auth.api";
+import { baseApi } from "../../redux/baseApi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [login, { isLoading,}] = useLoginMutation();
 
@@ -27,14 +28,11 @@ const Login = () => {
       const { token, user } = response; // destructure directly
 
       // Save token & user to localStorage
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userData", JSON.stringify(user)); // must stringify objects
-
-      // Save to Redux state
       dispatch(setToken(token));
-
-      // Redirect user after successful login
-      navigate("/dashboard");
+      localStorage.setItem("userData", JSON.stringify(user)); // must stringify objects
+localStorage.setItem("authToken", token);
+dispatch(baseApi.util.resetApiState()); // clears old cached data
+window.location.replace("/dashboard");  
 
       toast.success("Login Successful");
     } catch (err: any) {

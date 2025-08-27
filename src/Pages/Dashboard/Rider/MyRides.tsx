@@ -235,7 +235,7 @@ function RideCard({
       | "completed"
       | "canceled"
       | string;
-    rideCost: number;
+    rideCost?: number;
     createdAt: string;
   };
 }) {

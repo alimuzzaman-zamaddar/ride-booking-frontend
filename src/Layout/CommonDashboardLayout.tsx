@@ -13,7 +13,7 @@ const RiderNavLinks = [
   { id: 1, icon: HomeSvg, path: "/dashboard", title: "Dashboard" },
   {
     id: 2,
-    icon: GrSchedule,
+    icon: FiSearch,
     path: "rideRequest",
     title: "Request a ride",
   },

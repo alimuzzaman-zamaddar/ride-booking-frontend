@@ -25,17 +25,6 @@ export type CreateRideResponse = {
 };
 
 
-// export type Ride = {
-//   _id: string;
-//   riderId: string;
-//   pickupLocation: string;
-//   destination: string;
-//   status: "requested" | "accepted" | "ongoing" | "completed" | "cancelled";
-//   rideCost: number;
-//   earnings: number;
-//   createdAt: string;
-//   updatedAt: string;
-// };
 export type Ride = {
   _id: string;
   pickupLocation: string;
